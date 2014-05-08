@@ -45,7 +45,7 @@ or create it in code:
  - <code>setValueWidthPercent(float percentFromTotalWidth)</code>: Set the width of the value bar/arc in percent of the circle radius.
 
 
- **Showing values:**
+**Showing values:**
  - <code>public void showValue(float toShow, float total, boolean animated)</code>: Shows the given value. A maximumvalue also needs to be provided. Set animated to true to animate the displaying of the value.
  - <code>public void showPercentage(float percentage, boolean animated)</code>: Shows the given percentage value. Set animated to true to animate the displaying of the value.
 
