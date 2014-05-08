@@ -16,6 +16,8 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import java.text.DecimalFormat;
+
 @SuppressLint("NewApi")
 public class CircleDisplay extends View {
 
@@ -44,6 +46,9 @@ public class CircleDisplay extends View {
 
     /** if enabled, the center text is drawn */
     private boolean mDrawText = true;
+    
+    /** the decimalformat responsible for formatting the values in the view */
+    private DecimalFormat mFormatValue = new DecimalFormat("###,###,###,##0.0");;
 
     /**
      * rect object that represents the bounds of the view, needed for drawing
@@ -127,10 +132,10 @@ public class CircleDisplay extends View {
      */
     private void drawText(Canvas c) {
         if (mShowPercentage)
-            c.drawText((int) ((mAngle * mPhase) / 360f * 100f) + " %", getWidth() / 2, getHeight()
+            c.drawText(mFormatValue.format(((mAngle * mPhase) / 360f * 100f)) + " %", getWidth() / 2, getHeight()
                     / 2 + mTextPaint.descent(), mTextPaint);
         else
-            c.drawText((int) (mValue * mPhase) + "", getWidth() / 2,
+            c.drawText(mFormatValue.format(mValue * mPhase), getWidth() / 2,
                     getHeight() / 2 + mTextPaint.descent(), mTextPaint);
     }
 
@@ -358,6 +363,22 @@ public class CircleDisplay extends View {
      */
     public void setValueWidthPercent(float percentFromTotalWidth) {
         mValueWidthPercent = percentFromTotalWidth;
+    }
+    
+    /**
+     * sets the number of digits used to format values
+     * @param digits
+     */
+    public void setFormatDigits(int digits) {
+        
+        StringBuffer b = new StringBuffer();
+        for (int i = 0; i < digits; i++) {
+            if (i == 0)
+                b.append(".");
+            b.append("0");
+        }
+
+        mFormatValue = new DecimalFormat("###,###,###,##0" + b.toString());
     }
 
     public static abstract class Utils {
