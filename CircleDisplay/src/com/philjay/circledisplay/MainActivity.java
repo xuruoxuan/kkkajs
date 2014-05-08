@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
         
         mCircleDisplay = (CircleDisplay) findViewById(R.id.circleDisplay);
 
-        mCircleDisplay.setAnimDuration(3000);
+        mCircleDisplay.setAnimDuration(15000);
         mCircleDisplay.setValueWidthPercent(55f);
         mCircleDisplay.showPercentage(75f, true);
     }
