@@ -326,18 +326,38 @@ public class CircleDisplay extends View {
         invalidate();
     }
 
+    /**
+     * set this to true to draw the inner circle, default: true
+     * 
+     * @param enabled
+     */
     public void setDrawInnerCircle(boolean enabled) {
         mDrawInner = enabled;
     }
 
+    /**
+     * returns true if drawing the inner circle is enabled, false if not
+     * 
+     * @return
+     */
     public boolean isDrawInnerCircleEnabled() {
         return mDrawInner;
     }
 
+    /**
+     * set the drawing of the center text to be enabled or not
+     * 
+     * @param enabled
+     */
     public void setDrawText(boolean enabled) {
         mDrawText = enabled;
     }
 
+    /**
+     * returns true if drawing the text in the center is enabled
+     * 
+     * @return
+     */
     public boolean isDrawTextEnabled() {
         return mDrawText;
     }
