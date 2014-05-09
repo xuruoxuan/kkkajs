@@ -1,7 +1,7 @@
 CircleDisplay
 =============
 
-Android View for displaying values / percentages in a circle-shaped View, with animations.
+Android View for displaying and selecting (by touch) values / percentages in a circle-shaped View, with animations.
 
 Features
 =======
@@ -9,6 +9,7 @@ Features
 **Core features:**
  - Displaying values in a beautiful circle shaped View
  - Supports percentage and normal values
+ - Selecting / Choosing values with touch gestures
  - Fully customizeable
  - Animated drawing (bar representig the value fills up animated)
 
@@ -53,6 +54,13 @@ or create it in code:
  - <code>public void showValue(float toShow, float total, boolean animated)</code>: Shows the given value. A maximumvalue also needs to be provided. Set animated to true to animate the displaying of the value.
  - <code>public void showPercentage(float percentage, boolean animated)</code>: Shows the given percentage value. Set animated to true to animate the displaying of the value.
 
+ 
+**Selecting values:**
+ - **IMPORTANT** for selecting values <code>onTouch()</code>: Make sure to call one of the above two methods at least once before trying to select values by touching. This is needed to set a maximum value that can be chosen on touch. Calling <code>showValue(0, 1000, false)</code> before touching as an example will allow the user to choose a value between 0 and 1000, default 0.
+ - <code>setTouchEnabled(boolean enabled)</code>: Set this to true to allow touch-gestures / selecting.
+ - <code>setSelectionListener(SelectionListener l)</code>: Set a <code>SelectionListener</code> for callbacks when selecting values with touch-gestures. 
+
+
 **Full example:**
 ```java
     CircleDisplay cd = (CircleDisplay) findViewById(R.id.circleDisplay);
@@ -63,5 +71,7 @@ or create it in code:
     cd.setDrawText(true);
     cd.setDrawInnerCircle(true);
     cd.setFormatDigits(1);
+    cd.setTouchEnabled(true);
+    cd.setSelectionListener(this);
     cd.showPercentage(75f, true);
 ``` 
