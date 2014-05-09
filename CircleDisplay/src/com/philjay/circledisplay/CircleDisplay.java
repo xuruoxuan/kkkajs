@@ -32,6 +32,9 @@ public class CircleDisplay extends View {
 
     private static final String LOG_TAG = "PercentageView";
 
+    /** the unit that is represented by the circle-display */
+    private String mUnit = "%";
+
     /** startangle of the view */
     private float mStartAngle = 270f;
 
@@ -50,9 +53,6 @@ public class CircleDisplay extends View {
     /** percent of the maximum width the arc takes */
     private float mValueWidthPercent = 50f;
 
-    /** if true, percentage is drawn as text, else the actual value */
-    private boolean mShowPercentage = true;
-
     /** if enabled, the inner circle is drawn */
     private boolean mDrawInner = true;
 
@@ -66,7 +66,7 @@ public class CircleDisplay extends View {
     private int mDimAlpha = 80;
 
     /** the decimalformat responsible for formatting the values in the view */
-    private DecimalFormat mFormatValue = new DecimalFormat("###,###,###,##0.0");;
+    private DecimalFormat mFormatValue = new DecimalFormat("###,###,###,##0.0");
 
     /**
      * rect object that represents the bounds of the view, needed for drawing
@@ -149,13 +149,8 @@ public class CircleDisplay extends View {
      * @param c
      */
     private void drawText(Canvas c) {
-        if (mShowPercentage)
-            c.drawText(mFormatValue.format(((mAngle * mPhase) / 360f * 100f)) + " %",
-                    getWidth() / 2, getHeight()
-                            / 2 + mTextPaint.descent(), mTextPaint);
-        else
-            c.drawText(mFormatValue.format(mValue * mPhase), getWidth() / 2,
-                    getHeight() / 2 + mTextPaint.descent(), mTextPaint);
+        c.drawText(mFormatValue.format(mValue * mPhase) + " " + mUnit, getWidth() / 2,
+                getHeight() / 2 + mTextPaint.descent(), mTextPaint);
     }
 
     /**
@@ -214,15 +209,13 @@ public class CircleDisplay extends View {
     }
 
     /**
-     * shows the given value in the percentage view
+     * shows the given value in the circle view
      * 
      * @param toShow
      * @param total
      * @param animated
      */
     public void showValue(float toShow, float total, boolean animated) {
-
-        mShowPercentage = false;
 
         mAngle = calcAngle(toShow / total * 100f);
         mValue = toShow;
@@ -236,31 +229,42 @@ public class CircleDisplay extends View {
         }
     }
 
+    // /**
+    // * shows the given percentage in the percentageview
+    // *
+    // * @param percentage
+    // * @param animated
+    // */
+    // public void showPercentage(float percentage, boolean animated) {
+    //
+    // mShowPercentage = true;
+    //
+    // if (percentage > 100f)
+    // percentage = 100f;
+    // if (percentage < 0f)
+    // percentage = 0f;
+    //
+    // mAngle = calcAngle(percentage);
+    // mValue = percentage;
+    // mMaxValue = 100f;
+    //
+    // if (animated)
+    // startAnim();
+    // else {
+    // mPhase = 1f;
+    // invalidate();
+    // }
+    // }
+
     /**
-     * shows the given percentage in the percentageview
+     * Sets the unit that is displayed next to the value in the center of the
+     * view. Default "%". Could be "€" or "$" or left blank or whatever it is
+     * you display.
      * 
-     * @param percentage
-     * @param animated
+     * @param unit
      */
-    public void showPercentage(float percentage, boolean animated) {
-
-        mShowPercentage = true;
-
-        if (percentage > 100f)
-            percentage = 100f;
-        if (percentage < 0f)
-            percentage = 0f;
-
-        mAngle = calcAngle(percentage);
-        mValue = percentage;
-        mMaxValue = 100f;
-
-        if (animated)
-            startAnim();
-        else {
-            mPhase = 1f;
-            invalidate();
-        }
+    public void setUnit(String unit) {
+        mUnit = unit;
     }
 
     /**
@@ -522,7 +526,8 @@ public class CircleDisplay extends View {
             float distance = distanceToCenter(x, y);
             float r = getRadius();
 
-            // touch gestures only work when touches are made exactly on the bar/arc
+            // touch gestures only work when touches are made exactly on the
+            // bar/arc
             if (distance >= r - r * mValueWidthPercent / 100f && distance < r) {
 
                 switch (e.getAction()) {
@@ -628,10 +633,28 @@ public class CircleDisplay extends View {
      */
     public interface SelectionListener {
 
+        /**
+         * called when the user starts touching the circle-display
+         * 
+         * @param val
+         * @param maxval
+         */
         public void onSelectionStarted(float val, float maxval);
 
+        /**
+         * called everytime the user moves the finger on the circle-display
+         * 
+         * @param val
+         * @param maxval
+         */
         public void onSelectionUpdate(float val, float maxval);
 
+        /**
+         * called when the user releases his finger fromt he circle-display
+         * 
+         * @param val
+         * @param maxval
+         */
         public void onValueSelected(float val, float maxval);
     }
 
