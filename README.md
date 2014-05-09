@@ -45,8 +45,11 @@ or create it in code:
  - <code>setTextSize(float size)</code>: Set the size of the text in the center of the view.
  - <code>setValueWidthPercent(float percentFromTotalWidth)</code>: Set the width of the value bar/arc in percent of the circle radius.
  - <code>setFormatDigits(int digits)</code>: Sets the number of digits to use for the value in the center of the view.
+ - <code>setDimAlpha(int alpha)</code>: Value between 0 and 255 indicating the alpha value used for the remainder of the value-arc.
+ - <code>setPaint(int which, Paint p)</code>: Sets a new <code>Paint</code> object instead of the default one. Use <code>CircleDisplay.PAINT_TEXT</code> for example to change the text paint used.
 
-**Showing values:**
+
+**Showing stuff:**
  - <code>public void showValue(float toShow, float total, boolean animated)</code>: Shows the given value. A maximumvalue also needs to be provided. Set animated to true to animate the displaying of the value.
  - <code>public void showPercentage(float percentage, boolean animated)</code>: Shows the given percentage value. Set animated to true to animate the displaying of the value.
 
