@@ -5,10 +5,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity {
+import com.philjay.circledisplay.CircleDisplay.SelectionListener;
+
+public class MainActivity extends Activity implements SelectionListener {
     
     private CircleDisplay mCircleDisplay;
 
@@ -22,6 +25,9 @@ public class MainActivity extends Activity {
         mCircleDisplay.setAnimDuration(4000);
         mCircleDisplay.setValueWidthPercent(55f);
         mCircleDisplay.setFormatDigits(1);
+        mCircleDisplay.setDimAlpha(80);
+        mCircleDisplay.setSelectionListener(this);
+        mCircleDisplay.setTouchEnabled(true);
         mCircleDisplay.showPercentage(75f, true);
     }
 
@@ -39,5 +45,20 @@ public class MainActivity extends Activity {
             startActivity(i);
         }
         return true;
+    }
+
+    @Override
+    public void onSelectionStarted(float val, float maxval) {
+        Log.i("Main", "Selection started: " + val + ", max: " + maxval);
+    }
+
+    @Override
+    public void onSelectionUpdate(float val, float maxval) {
+        Log.i("Main", "Selection update: " + val + ", max: " + maxval);
+    }
+
+    @Override
+    public void onValueSelected(float val, float maxval) {
+        Log.i("Main", "Selection complete: " + val + ", max: " + maxval);
     }
 }

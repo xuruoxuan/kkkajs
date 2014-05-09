@@ -10,18 +10,27 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.text.DecimalFormat;
 
+/**
+ * Simple custom-view for displaying values (with and without animation) and
+ * selecting values onTouch().
+ * 
+ * @author Philipp Jahoda
+ */
 @SuppressLint("NewApi")
 public class CircleDisplay extends View {
 
-    // private static final String LOG_TAG = "PercentageView";
+    private static final String LOG_TAG = "PercentageView";
 
     /** startangle of the view */
     private float mStartAngle = 270f;
@@ -35,6 +44,9 @@ public class CircleDisplay extends View {
     /** the currently displayed value, can be percent or actual value */
     private float mValue = 0f;
 
+    /** the maximum displayable value, depends on the set value */
+    private float mMaxValue = 0f;
+
     /** percent of the maximum width the arc takes */
     private float mValueWidthPercent = 50f;
 
@@ -46,6 +58,9 @@ public class CircleDisplay extends View {
 
     /** if enabled, the center text is drawn */
     private boolean mDrawText = true;
+
+    /** if enabled, touching and therefore selecting values is enabled */
+    private boolean mTouchEnabled = true;
 
     /** represents the alpha value used for the remainder bar */
     private int mDimAlpha = 80;
@@ -211,6 +226,7 @@ public class CircleDisplay extends View {
 
         mAngle = calcAngle(toShow / total * 100f);
         mValue = toShow;
+        mMaxValue = total;
 
         if (animated)
             startAnim();
@@ -237,6 +253,7 @@ public class CircleDisplay extends View {
 
         mAngle = calcAngle(percentage);
         mValue = percentage;
+        mMaxValue = 100f;
 
         if (animated)
             startAnim();
@@ -445,6 +462,177 @@ public class CircleDisplay extends View {
                 mTextPaint = p;
                 break;
         }
+    }
+
+    /**
+     * returns the center point of the view in pixels
+     * 
+     * @return
+     */
+    public PointF getCenter() {
+        return new PointF(getWidth() / 2, getHeight() / 2);
+    }
+
+    /**
+     * Enable touch gestures on the circle-display. If enabled, selecting values
+     * onTouch() is possible. Set a SelectionListener to retrieve selected
+     * values. Do not forget to set a value before selecting values. By default
+     * the maxvalue is 0f and therefore nothing can be selected.
+     * 
+     * @param enabled
+     */
+    public void setTouchEnabled(boolean enabled) {
+        mTouchEnabled = enabled;
+    }
+
+    /**
+     * returns true if touch-gestures are enabled, false if not
+     * 
+     * @return
+     */
+    public boolean isTouchEnabled() {
+        return mTouchEnabled;
+    }
+
+    /**
+     * set a selection listener for the circle-display that is called whenever a
+     * value is selected onTouch()
+     * 
+     * @param l
+     */
+    public void setSelectionListener(SelectionListener l) {
+        mListener = l;
+    }
+
+    /** listener called when a value has been selected on touch */
+    private SelectionListener mListener;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        if (mTouchEnabled) {
+
+            if (mListener == null)
+                Log.w(LOG_TAG,
+                        "No SelectionListener specified. Use setSelectionListener(...) to set a listener for callbacks when selecting values.");
+
+            float x = e.getX();
+            float y = e.getY();
+
+            // get the distance from the touch to the center of the view
+            float distance = distanceToCenter(x, y);
+            float r = getRadius();
+
+            // touch gestures only work when touches are made exactly on the bar/arc
+            if (distance >= r - r * mValueWidthPercent / 100f && distance < r) {
+
+                switch (e.getAction()) {
+
+                    case MotionEvent.ACTION_DOWN:
+                        if (mListener != null)
+                            mListener.onSelectionStarted(mValue, mMaxValue);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+
+                        // calculate the touch-angle
+                        mAngle = getAngleForPoint(x, y);
+
+                        // calculate the new value depending on angle
+                        mValue = mMaxValue * mAngle / 360f;
+                        // Log.i("touch", "value: " + mValue);
+                        invalidate();
+                        if (mListener != null)
+                            mListener.onSelectionUpdate(mValue, mMaxValue);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mListener != null)
+                            mListener.onValueSelected(mValue, mMaxValue);
+                        break;
+                }
+            }
+
+            return true;
+        }
+        else
+            return super.onTouchEvent(e);
+    }
+
+    /**
+     * returns the angle relative to the view center for the given point on the
+     * chart in degrees. The angle is always between 0 and 360°, 0° is NORTH
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
+    public float getAngleForPoint(float x, float y) {
+
+        PointF c = getCenter();
+
+        double tx = x - c.x, ty = y - c.y;
+        double length = Math.sqrt(tx * tx + ty * ty);
+        double r = Math.acos(ty / length);
+
+        float angle = (float) Math.toDegrees(r);
+
+        if (x > c.x)
+            angle = 360f - angle;
+
+        angle = angle + 180;
+
+        // neutralize overflow
+        if (angle > 360f)
+            angle = angle - 360f;
+
+        return angle;
+    }
+
+    /**
+     * returns the distance of a certain point on the view to the center of the
+     * view
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
+    public float distanceToCenter(float x, float y) {
+
+        PointF c = getCenter();
+
+        float dist = 0f;
+
+        float xDist = 0f;
+        float yDist = 0f;
+
+        if (x > c.x) {
+            xDist = x - c.x;
+        } else {
+            xDist = c.x - x;
+        }
+
+        if (y > c.y) {
+            yDist = y - c.y;
+        } else {
+            yDist = c.y - y;
+        }
+
+        // pythagoras
+        dist = (float) Math.sqrt(Math.pow(xDist, 2.0) + Math.pow(yDist, 2.0));
+
+        return dist;
+    }
+
+    /**
+     * listener for callbacks when selecting values ontouch
+     * 
+     * @author Philipp Jahoda
+     */
+    public interface SelectionListener {
+
+        public void onSelectionStarted(float val, float maxval);
+
+        public void onSelectionUpdate(float val, float maxval);
+
+        public void onValueSelected(float val, float maxval);
     }
 
     public static abstract class Utils {
