@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
 @SuppressLint("NewApi")
 public class CircleDisplay extends View {
 
-//    private static final String LOG_TAG = "PercentageView";
+    // private static final String LOG_TAG = "PercentageView";
 
     /** startangle of the view */
     private float mStartAngle = 270f;
@@ -46,7 +46,10 @@ public class CircleDisplay extends View {
 
     /** if enabled, the center text is drawn */
     private boolean mDrawText = true;
-    
+
+    /** represents the alpha value used for the remainder bar */
+    private int mDimAlpha = 80;
+
     /** the decimalformat responsible for formatting the values in the view */
     private DecimalFormat mFormatValue = new DecimalFormat("###,###,###,##0.0");;
 
@@ -56,7 +59,7 @@ public class CircleDisplay extends View {
      */
     private RectF mCircleBox = new RectF();
 
-    private Paint mAnglePaint;
+    private Paint mArcPaint;
     private Paint mInnerCirclePaint;
     private Paint mTextPaint;
 
@@ -82,9 +85,9 @@ public class CircleDisplay extends View {
 
         mBoxSetup = false;
 
-        mAnglePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mAnglePaint.setStyle(Style.FILL);
-        mAnglePaint.setColor(Color.rgb(111, 219, 90));
+        mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mArcPaint.setStyle(Style.FILL);
+        mArcPaint.setColor(Color.rgb(111, 219, 90));
 
         mInnerCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mInnerCirclePaint.setStyle(Style.FILL);
@@ -132,8 +135,9 @@ public class CircleDisplay extends View {
      */
     private void drawText(Canvas c) {
         if (mShowPercentage)
-            c.drawText(mFormatValue.format(((mAngle * mPhase) / 360f * 100f)) + " %", getWidth() / 2, getHeight()
-                    / 2 + mTextPaint.descent(), mTextPaint);
+            c.drawText(mFormatValue.format(((mAngle * mPhase) / 360f * 100f)) + " %",
+                    getWidth() / 2, getHeight()
+                            / 2 + mTextPaint.descent(), mTextPaint);
         else
             c.drawText(mFormatValue.format(mValue * mPhase), getWidth() / 2,
                     getHeight() / 2 + mTextPaint.descent(), mTextPaint);
@@ -145,11 +149,11 @@ public class CircleDisplay extends View {
      * @param c
      */
     private void drawWholeCircle(Canvas c) {
-        mAnglePaint.setAlpha(80);
+        mArcPaint.setAlpha(mDimAlpha);
 
         float r = getRadius();
 
-        c.drawCircle(getWidth() / 2, getHeight() / 2, r, mAnglePaint);
+        c.drawCircle(getWidth() / 2, getHeight() / 2, r, mArcPaint);
     }
 
     /**
@@ -170,11 +174,11 @@ public class CircleDisplay extends View {
      */
     private void drawValue(Canvas c) {
 
-        mAnglePaint.setAlpha(255);
+        mArcPaint.setAlpha(255);
 
         float angle = mAngle * mPhase;
 
-        c.drawArc(mCircleBox, mStartAngle, angle, true, mAnglePaint);
+        c.drawArc(mCircleBox, mStartAngle, angle, true, mArcPaint);
 
         // Log.i(LOG_TAG, "CircleBox bounds: " + mCircleBox.toString() +
         // ", Angle: " + angle + ", StartAngle: " + mStartAngle);
@@ -344,7 +348,7 @@ public class CircleDisplay extends View {
      * @param color
      */
     public void setColor(int color) {
-        mAnglePaint.setColor(color);
+        mArcPaint.setColor(color);
     }
 
     /**
@@ -364,13 +368,14 @@ public class CircleDisplay extends View {
     public void setValueWidthPercent(float percentFromTotalWidth) {
         mValueWidthPercent = percentFromTotalWidth;
     }
-    
+
     /**
      * sets the number of digits used to format values
+     * 
      * @param digits
      */
     public void setFormatDigits(int digits) {
-        
+
         StringBuffer b = new StringBuffer();
         for (int i = 0; i < digits; i++) {
             if (i == 0)
@@ -379,6 +384,47 @@ public class CircleDisplay extends View {
         }
 
         mFormatValue = new DecimalFormat("###,###,###,##0" + b.toString());
+    }
+
+    /**
+     * set the aplha value to be used for the remainder of the arc, default 80
+     * (use value between 0 and 255)
+     * 
+     * @param alpha
+     */
+    public void setDimAlpha(int alpha) {
+        mDimAlpha = alpha;
+    }
+
+    /** paint used for drawing the text */
+    public static final int PAINT_TEXT = 1;
+
+    /** paint representing the value bar */
+    public static final int PAINT_ARC = 2;
+
+    /** paint representing the inner (by default white) area */
+    public static final int PAINT_INNER = 3;
+
+    /**
+     * sets the given paint object to be used instead of the original/default
+     * one
+     * 
+     * @param which, e.g. CircleDisplay.PAINT_TEXT to set a new text paint
+     * @param p
+     */
+    public void setPaint(int which, Paint p) {
+
+        switch (which) {
+            case PAINT_ARC:
+                mArcPaint = p;
+                break;
+            case PAINT_INNER:
+                mInnerCirclePaint = p;
+                break;
+            case PAINT_TEXT:
+                mTextPaint = p;
+                break;
+        }
     }
 
     public static abstract class Utils {
