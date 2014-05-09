@@ -48,15 +48,15 @@ or create it in code:
  - <code>setFormatDigits(int digits)</code>: Sets the number of digits to use for the value in the center of the view.
  - <code>setDimAlpha(int alpha)</code>: Value between 0 and 255 indicating the alpha value used for the remainder of the value-arc.
  - <code>setPaint(int which, Paint p)</code>: Sets a new <code>Paint</code> object instead of the default one. Use <code>CircleDisplay.PAINT_TEXT</code> for example to change the text paint used.
+ - <code>setUnit(String unit)</code>: Sets a unit that is displayed in the center of the view. E.g. "%" or "€" or whatever it is you want the circle-display to represent.
 
 
 **Showing stuff:**
  - <code>public void showValue(float toShow, float total, boolean animated)</code>: Shows the given value. A maximumvalue also needs to be provided. Set animated to true to animate the displaying of the value.
- - <code>public void showPercentage(float percentage, boolean animated)</code>: Shows the given percentage value. Set animated to true to animate the displaying of the value.
 
  
 **Selecting values:**
- - **IMPORTANT** for selecting values <code>onTouch()</code>: Make sure to call one of the above two methods at least once before trying to select values by touching. This is needed to set a maximum value that can be chosen on touch. Calling <code>showValue(0, 1000, false)</code> before touching as an example will allow the user to choose a value between 0 and 1000, default 0.
+ - **IMPORTANT** for selecting values <code>onTouch()</code>: Make sure to call <code>showValue(...)</code> at least once before trying to select values by touching. This is needed to set a maximum value that can be chosen on touch. Calling <code>showValue(0, 1000, false)</code> before touching as an example will allow the user to choose a value between 0 and 1000, default 0.
  - <code>setTouchEnabled(boolean enabled)</code>: Set this to true to allow touch-gestures / selecting.
  - <code>setSelectionListener(SelectionListener l)</code>: Set a <code>SelectionListener</code> for callbacks when selecting values with touch-gestures. 
 
@@ -73,5 +73,6 @@ or create it in code:
     cd.setFormatDigits(1);
     cd.setTouchEnabled(true);
     cd.setSelectionListener(this);
-    cd.showPercentage(75f, true);
+    cd.setUnit("%");
+    cd.showValue(75f, 100f, true);
 ``` 
