@@ -49,11 +49,6 @@ public class MainActivity extends Activity implements SelectionListener {
     }
 
     @Override
-    public void onSelectionStarted(float val, float maxval) {
-        Log.i("Main", "Selection started: " + val + ", max: " + maxval);
-    }
-
-    @Override
     public void onSelectionUpdate(float val, float maxval) {
         Log.i("Main", "Selection update: " + val + ", max: " + maxval);
     }

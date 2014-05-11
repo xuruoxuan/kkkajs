@@ -15,6 +15,8 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -28,7 +30,7 @@ import java.text.DecimalFormat;
  * @author Philipp Jahoda
  */
 @SuppressLint("NewApi")
-public class CircleDisplay extends View {
+public class CircleDisplay extends View implements OnGestureListener {
 
     private static final String LOG_TAG = "PercentageView";
 
@@ -510,6 +512,9 @@ public class CircleDisplay extends View {
 
     /** listener called when a value has been selected on touch */
     private SelectionListener mListener;
+    
+    /** gesturedetector for recognizing single-taps */
+    private GestureDetector mGestureDetector = new GestureDetector(this);
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
@@ -518,6 +523,10 @@ public class CircleDisplay extends View {
             if (mListener == null)
                 Log.w(LOG_TAG,
                         "No SelectionListener specified. Use setSelectionListener(...) to set a listener for callbacks when selecting values.");
+            
+            // if the detector recognized a gesture, consume it
+            if (mGestureDetector.onTouchEvent(e))
+                return true;
 
             float x = e.getX();
             float y = e.getY();
@@ -532,10 +541,10 @@ public class CircleDisplay extends View {
 
                 switch (e.getAction()) {
 
-                    case MotionEvent.ACTION_DOWN:
-                        if (mListener != null)
-                            mListener.onSelectionStarted(mValue, mMaxValue);
-                        break;
+//                    case MotionEvent.ACTION_DOWN:
+//                        if (mListener != null)
+//                            mListener.onSelectionStarted(mValue, mMaxValue);
+//                        break;
                     case MotionEvent.ACTION_MOVE:
 
                         // calculate the touch-angle
@@ -559,6 +568,23 @@ public class CircleDisplay extends View {
         }
         else
             return super.onTouchEvent(e);
+    }
+    
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        
+        // calculate the touch-angle
+        mAngle = getAngleForPoint(e.getX(), e.getY());
+
+        // calculate the new value depending on angle
+        mValue = mMaxValue * mAngle / 360f;
+        // Log.i("touch", "value: " + mValue);
+        invalidate();
+        
+        if (mListener != null)
+            mListener.onValueSelected(mValue, mMaxValue);
+        
+        return true;
     }
 
     /**
@@ -634,14 +660,6 @@ public class CircleDisplay extends View {
     public interface SelectionListener {
 
         /**
-         * called when the user starts touching the circle-display
-         * 
-         * @param val
-         * @param maxval
-         */
-        public void onSelectionStarted(float val, float maxval);
-
-        /**
          * called everytime the user moves the finger on the circle-display
          * 
          * @param val
@@ -674,5 +692,35 @@ public class CircleDisplay extends View {
             float px = dp * (metrics.densityDpi / 160f);
             return px;
         }
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+        // TODO Auto-generated method stub
+        
     }
 }
