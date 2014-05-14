@@ -76,5 +76,6 @@ default 1f. It is recommended to make this value not higher than 1/5 of the maxi
     cd.setTouchEnabled(true);
     cd.setSelectionListener(this);
     cd.setUnit("%");
+    cd.setStepSize(0.5f);
     cd.showValue(75f, 100f, true);
 ``` 
