@@ -49,6 +49,8 @@ or create it in code:
  - <code>setDimAlpha(int alpha)</code>: Value between 0 and 255 indicating the alpha value used for the remainder of the value-arc.
  - <code>setPaint(int which, Paint p)</code>: Sets a new <code>Paint</code> object instead of the default one. Use <code>CircleDisplay.PAINT_TEXT</code> for example to change the text paint used.
  - <code>setUnit(String unit)</code>: Sets a unit that is displayed in the center of the view. E.g. "%" or "€" or whatever it is you want the circle-display to represent.
+ - <code>setStepSize(float stepsize)</code>: Sets the stepsize (minimum selection interval) of the circle display,
+default 1f. It is recommended to make this value not higher than 1/5 of the maximum selectable value, and not lower than 1/200 of the maximum selectable value. For example, if a maximum of 100 has been chosen, a stepsize between 0.5 and 20 is recommended.
 
 
 **Showing stuff:**
