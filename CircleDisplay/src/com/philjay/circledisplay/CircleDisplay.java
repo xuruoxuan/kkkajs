@@ -40,6 +40,12 @@ public class CircleDisplay extends View implements OnGestureListener {
     /** startangle of the view */
     private float mStartAngle = 270f;
 
+    /**
+     * field representing the minimum selectable value in the display - the
+     * minimum interval
+     */
+    float mStepSize = 1f;
+
     /** angle that represents the displayed value */
     private float mAngle = 0f;
 
@@ -471,6 +477,28 @@ public class CircleDisplay extends View implements OnGestureListener {
     }
 
     /**
+     * Sets the stepsize (minimum selection interval) of the circle display,
+     * default 1f. It is recommended to make this value not higher than 1/5 of
+     * the maximum selectable value, and not lower than 1/200 of the maximum
+     * selectable value. For a maximum value of 100 for example, a stepsize
+     * between 0.5 and 20 is recommended.
+     * 
+     * @param stepsize
+     */
+    public void setStepSize(float stepsize) {
+        mStepSize = stepsize;
+    }
+
+    /**
+     * returns the current stepsize of the display, default 1f
+     * 
+     * @return
+     */
+    public float getStepSize() {
+        return mStepSize;
+    }
+
+    /**
      * returns the center point of the view in pixels
      * 
      * @return
@@ -512,7 +540,7 @@ public class CircleDisplay extends View implements OnGestureListener {
 
     /** listener called when a value has been selected on touch */
     private SelectionListener mListener;
-    
+
     /** gesturedetector for recognizing single-taps */
     private GestureDetector mGestureDetector = new GestureDetector(this);
 
@@ -523,7 +551,7 @@ public class CircleDisplay extends View implements OnGestureListener {
             if (mListener == null)
                 Log.w(LOG_TAG,
                         "No SelectionListener specified. Use setSelectionListener(...) to set a listener for callbacks when selecting values.");
-            
+
             // if the detector recognized a gesture, consume it
             if (mGestureDetector.onTouchEvent(e))
                 return true;
@@ -541,18 +569,13 @@ public class CircleDisplay extends View implements OnGestureListener {
 
                 switch (e.getAction()) {
 
-//                    case MotionEvent.ACTION_DOWN:
-//                        if (mListener != null)
-//                            mListener.onSelectionStarted(mValue, mMaxValue);
-//                        break;
+                // case MotionEvent.ACTION_DOWN:
+                // if (mListener != null)
+                // mListener.onSelectionStarted(mValue, mMaxValue);
+                // break;
                     case MotionEvent.ACTION_MOVE:
 
-                        // calculate the touch-angle
-                        mAngle = getAngleForPoint(x, y);
-
-                        // calculate the new value depending on angle
-                        mValue = mMaxValue * mAngle / 360f;
-                        // Log.i("touch", "value: " + mValue);
+                        updateValue(x, y);
                         invalidate();
                         if (mListener != null)
                             mListener.onSelectionUpdate(mValue, mMaxValue);
@@ -569,21 +592,53 @@ public class CircleDisplay extends View implements OnGestureListener {
         else
             return super.onTouchEvent(e);
     }
-    
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        
+
+    /**
+     * updates the display with the given touch position, takes stepsize into
+     * consideration
+     * 
+     * @param x
+     * @param y
+     */
+    private void updateValue(float x, float y) {
+
         // calculate the touch-angle
-        mAngle = getAngleForPoint(e.getX(), e.getY());
+        float angle = getAngleForPoint(x, y);
 
         // calculate the new value depending on angle
-        mValue = mMaxValue * mAngle / 360f;
-        // Log.i("touch", "value: " + mValue);
+        float newVal = mMaxValue * angle / 360f;
+
+        // if no stepsize
+        if (mStepSize == 0f) {
+            mValue = newVal;
+            mAngle = angle;
+            return;
+        }
+
+        float remainder = newVal % mStepSize;
+
+        // check if the new value is closer to the next, or the previous
+        if (remainder <= mStepSize / 2f) {
+
+            newVal = newVal - remainder;
+        } else {
+            newVal = newVal - remainder + mStepSize;
+        }
+
+        // set the new values
+        mAngle = getAngleForValue(newVal);
+        mValue = newVal;
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+
+        updateValue(e.getX(), e.getY());
         invalidate();
-        
+
         if (mListener != null)
             mListener.onValueSelected(mValue, mMaxValue);
-        
+
         return true;
     }
 
@@ -615,6 +670,26 @@ public class CircleDisplay extends View implements OnGestureListener {
             angle = angle - 360f;
 
         return angle;
+    }
+
+    /**
+     * returns the angle representing the given value
+     * 
+     * @param value
+     * @return
+     */
+    public float getAngleForValue(float value) {
+        return value / mMaxValue * 360f;
+    }
+
+    /**
+     * returns the value representing the given angle
+     * 
+     * @param angle
+     * @return
+     */
+    public float getValueForAngle(float angle) {
+        return angle / 360f * mMaxValue;
     }
 
     /**
@@ -709,7 +784,7 @@ public class CircleDisplay extends View implements OnGestureListener {
     @Override
     public void onLongPress(MotionEvent e) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -721,6 +796,6 @@ public class CircleDisplay extends View implements OnGestureListener {
     @Override
     public void onShowPress(MotionEvent e) {
         // TODO Auto-generated method stub
-        
+
     }
 }

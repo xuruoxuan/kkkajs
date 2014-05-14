@@ -29,6 +29,7 @@ public class MainActivity extends Activity implements SelectionListener {
         mCircleDisplay.setSelectionListener(this);
         mCircleDisplay.setTouchEnabled(true);
         mCircleDisplay.setUnit("%");
+        mCircleDisplay.setStepSize(0.5f);
         mCircleDisplay.showValue(75, 100, true);
     }
 
