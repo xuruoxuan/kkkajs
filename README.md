@@ -40,13 +40,14 @@ or create it in code:
 **Style** your <code>CircleDisplay</code>, and **show values**.
 
 **Styling methods:**
- - <code>setColor(int color)</code>: Use this method to set the color for the arc/bar that represents the value.
+ - <code>setColor(int color)</code>: Use this method to set the color for the arc/bar that represents the value. You can either use <code>Color.COLORNAME</code> as a parameter or <code>getColor(resid)</code>.
  - <code>setStartAngle(float angle)</code>: Set the starting angle of your arc/bar. By default, it starts at the top of the view (270°).
  - <code>setAnimDuration(int millis)</code>: Set the duration in milliseconds it takes to animate/build up the bar.
  - <code>setTextSize(float size)</code>: Set the size of the text in the center of the view.
  - <code>setValueWidthPercent(float percentFromTotalWidth)</code>: Set the width of the value bar/arc in percent of the circle radius.
  - <code>setFormatDigits(int digits)</code>: Sets the number of digits to use for the value in the center of the view.
  - <code>setDimAlpha(int alpha)</code>: Value between 0 and 255 indicating the alpha value used for the remainder of the value-arc.
+ - <code>setDrawText(boolean enabled)</code>: If enabled, center text (containing value and unit) is drawn.
  - <code>setPaint(int which, Paint p)</code>: Sets a new <code>Paint</code> object instead of the default one. Use <code>CircleDisplay.PAINT_TEXT</code> for example to change the text paint used.
  - <code>setUnit(String unit)</code>: Sets a unit that is displayed in the center of the view. E.g. "%" or "€" or whatever it is you want the circle-display to represent.
  - <code>setStepSize(float stepsize)</code>: Sets the stepsize (minimum selection interval) of the circle display,
