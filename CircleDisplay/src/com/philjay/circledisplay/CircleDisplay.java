@@ -419,7 +419,7 @@ public class CircleDisplay extends View implements OnGestureListener {
     /**
      * Set an array of custom texts to be drawn instead of the value in the
      * center of the CircleDisplay. If set to null, the custom text will be
-     * reset and the value will be drawn.
+     * reset and the value will be drawn. Make sure the length of the array corresponds with the maximum number of steps (set with setStepSize(float stepsize).
      * 
      * @param custom
      */
