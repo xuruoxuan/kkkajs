@@ -32,7 +32,7 @@ import java.text.DecimalFormat;
 @SuppressLint("NewApi")
 public class CircleDisplay extends View implements OnGestureListener {
 
-    private static final String LOG_TAG = "PercentageView";
+    private static final String LOG_TAG = "CircleDisplay";
 
     /** the unit that is represented by the circle-display */
     private String mUnit = "%";
@@ -44,7 +44,7 @@ public class CircleDisplay extends View implements OnGestureListener {
      * field representing the minimum selectable value in the display - the
      * minimum interval
      */
-    float mStepSize = 1f;
+    private float mStepSize = 1f;
 
     /** angle that represents the displayed value */
     private float mAngle = 0f;
@@ -75,6 +75,9 @@ public class CircleDisplay extends View implements OnGestureListener {
 
     /** the decimalformat responsible for formatting the values in the view */
     private DecimalFormat mFormatValue = new DecimalFormat("###,###,###,##0.0");
+
+    /** array that contains values for the custom-text */
+    private String[] mCustomText = null;
 
     /**
      * rect object that represents the bounds of the view, needed for drawing
@@ -124,6 +127,8 @@ public class CircleDisplay extends View implements OnGestureListener {
 
         mDrawAnimator = ObjectAnimator.ofFloat(this, "phase", mPhase, 1.0f).setDuration(3000);
         mDrawAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        mGestureDetector = new GestureDetector(getContext(), this);
     }
 
     /** boolean flag that indicates if the box has been setup */
@@ -138,8 +143,6 @@ public class CircleDisplay extends View implements OnGestureListener {
             setupBox();
         }
 
-        // canvas.drawColor(Color.WHITE);
-
         drawWholeCircle(canvas);
 
         drawValue(canvas);
@@ -147,8 +150,13 @@ public class CircleDisplay extends View implements OnGestureListener {
         if (mDrawInner)
             drawInnerCircle(canvas);
 
-        if (mDrawText)
-            drawText(canvas);
+        if (mDrawText) {
+            
+            if (mCustomText != null)
+                drawCustomText(canvas);
+            else
+                drawText(canvas);
+        }
     }
 
     /**
@@ -159,6 +167,23 @@ public class CircleDisplay extends View implements OnGestureListener {
     private void drawText(Canvas c) {
         c.drawText(mFormatValue.format(mValue * mPhase) + " " + mUnit, getWidth() / 2,
                 getHeight() / 2 + mTextPaint.descent(), mTextPaint);
+    }
+
+    /**
+     * draws the custom text in the center of the view
+     * 
+     * @param c
+     */
+    private void drawCustomText(Canvas c) {
+        
+        int index = (int) ((mValue * mPhase) / mStepSize);
+        
+        if(index < mCustomText.length) {
+            c.drawText(mCustomText[index], getWidth() / 2,
+                    getHeight() / 2 + mTextPaint.descent(), mTextPaint);
+        } else {
+            Log.e(LOG_TAG, "Custom text array not long enough.");
+        }        
     }
 
     /**
@@ -236,33 +261,6 @@ public class CircleDisplay extends View implements OnGestureListener {
             invalidate();
         }
     }
-
-    // /**
-    // * shows the given percentage in the percentageview
-    // *
-    // * @param percentage
-    // * @param animated
-    // */
-    // public void showPercentage(float percentage, boolean animated) {
-    //
-    // mShowPercentage = true;
-    //
-    // if (percentage > 100f)
-    // percentage = 100f;
-    // if (percentage < 0f)
-    // percentage = 0f;
-    //
-    // mAngle = calcAngle(percentage);
-    // mValue = percentage;
-    // mMaxValue = 100f;
-    //
-    // if (animated)
-    // startAnim();
-    // else {
-    // mPhase = 1f;
-    // invalidate();
-    // }
-    // }
 
     /**
      * Sets the unit that is displayed next to the value in the center of the
@@ -419,6 +417,17 @@ public class CircleDisplay extends View implements OnGestureListener {
     }
 
     /**
+     * Set an array of custom texts to be drawn instead of the value in the
+     * center of the CircleDisplay. If set to null, the custom text will be
+     * reset and the value will be drawn.
+     * 
+     * @param custom
+     */
+    public void setCustomText(String[] custom) {
+        mCustomText = custom;
+    }
+
+    /**
      * sets the number of digits used to format values
      * 
      * @param digits
@@ -542,7 +551,7 @@ public class CircleDisplay extends View implements OnGestureListener {
     private SelectionListener mListener;
 
     /** gesturedetector for recognizing single-taps */
-    private GestureDetector mGestureDetector = new GestureDetector(this);
+    private GestureDetector mGestureDetector;
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
@@ -633,11 +642,20 @@ public class CircleDisplay extends View implements OnGestureListener {
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
 
-        updateValue(e.getX(), e.getY());
-        invalidate();
+        // get the distance from the touch to the center of the view
+        float distance = distanceToCenter(e.getX(), e.getY());
+        float r = getRadius();
 
-        if (mListener != null)
-            mListener.onValueSelected(mValue, mMaxValue);
+        // touch gestures only work when touches are made exactly on the
+        // bar/arc
+        if (distance >= r - r * mValueWidthPercent / 100f && distance < r) {
+
+            updateValue(e.getX(), e.getY());
+            invalidate();
+
+            if (mListener != null)
+                mListener.onValueSelected(mValue, mMaxValue);
+        }
 
         return true;
     }
