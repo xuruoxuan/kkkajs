@@ -52,7 +52,7 @@ or create it in code:
  - <code>setUnit(String unit)</code>: Sets a unit that is displayed in the center of the view. E.g. "%" or "€" or whatever it is you want the circle-display to represent.
  - <code>setStepSize(float stepsize)</code>: Sets the stepsize (minimum selection interval) of the circle display,
 default 1f. It is recommended to make this value not higher than 1/5 of the maximum selectable value, and not lower than 1/200 of the maximum selectable value. For example, if a maximum of 100 has been chosen, a stepsize between 0.5 and 20 is recommended.
-
+ - <code>setCustomText(String[] custom)</code>: Sets an array of custom Strings to be drawn instead of the actual value in the center of the CircleDisplay. If set to null, the custom text will be reset and the value will be drawn. Make sure the length of the array corresponds with the maximum number of steps (maxvalue / stepsize).
 
 **Showing stuff:**
  - <code>public void showValue(float toShow, float total, boolean animated)</code>: Shows the given value. A maximumvalue also needs to be provided. Set animated to true to animate the displaying of the value.
@@ -78,5 +78,6 @@ default 1f. It is recommended to make this value not higher than 1/5 of the maxi
     cd.setSelectionListener(this);
     cd.setUnit("%");
     cd.setStepSize(0.5f);
+    // cd.setCustomText(...); // sets a custom array of text
     cd.showValue(75f, 100f, true);
 ``` 
