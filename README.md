@@ -9,7 +9,7 @@ Features
 **Core features:**
  - Displaying values in a beautiful circle shaped View
  - Supports percentage and normal values
- - Selecting / Choosing values with touch gestures
+ - Selecting / Choosing values with touch gestures (including callbacks)
  - Fully customizeable
  - Animated drawing (bar representig the value fills up animated)
 
