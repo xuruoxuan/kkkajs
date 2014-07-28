@@ -19,7 +19,7 @@ Features
 Usage
 =======
 
-Simply **copy the CircleDisplay.java** file into your project. 
+Simply **copy the CircleDisplay.java** file into your project. No annoying library imports, you **ONLY** need that single file.
 
 For using the <code>CircleDisplay</code>, define it in .xml:
 ```xml
