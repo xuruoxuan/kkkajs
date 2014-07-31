@@ -9,16 +9,17 @@ Features
 **Core features:**
  - Displaying values in a beautiful circle shaped View
  - Supports percentage and normal values
- - Selecting / Choosing values with touch gestures
+ - Selecting / Choosing values with touch gestures (including callbacks)
  - Fully customizeable
  - Animated drawing (bar representig the value fills up animated)
 
 ![alt tag](https://raw.github.com/PhilJay/CircleDisplay/master/screenshots/demo.png) 
+![alt tag](https://raw.github.com/PhilJay/CircleDisplay/master/screenshots/circledisplay_demo.gif) 
 
 Usage
 =======
 
-Simply **copy the CircleDisplay.java** file into your project. 
+Simply **copy the CircleDisplay.java** file into your project. No annoying library imports, you **ONLY** need that single file.
 
 For using the <code>CircleDisplay</code>, define it in .xml:
 ```xml
