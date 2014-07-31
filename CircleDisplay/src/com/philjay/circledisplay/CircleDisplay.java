@@ -113,7 +113,7 @@ public class CircleDisplay extends View implements OnGestureListener {
 
         mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mArcPaint.setStyle(Style.FILL);
-        mArcPaint.setColor(Color.rgb(111, 219, 90));
+        mArcPaint.setColor(Color.rgb(192, 255, 140));
 
         mInnerCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mInnerCirclePaint.setStyle(Style.FILL);
