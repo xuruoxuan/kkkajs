@@ -13,7 +13,7 @@ Features
  - Fully customizeable
  - Animated drawing (bar representig the value fills up animated)
 
-![alt tag](https://raw.github.com/PhilJay/CircleDisplay/master/screenshots/circle_display.png) 
+<img src="https://raw.github.com/PhilJay/CircleDisplay/master/screenshots/circle_display.png" width="450">
 ![alt tag](https://raw.github.com/PhilJay/CircleDisplay/master/screenshots/circledisplay_demo.gif) 
 
 Usage
