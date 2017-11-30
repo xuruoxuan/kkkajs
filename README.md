@@ -14,6 +14,7 @@ Features
  - Animated drawing (bar representig the value fills up animated)
 
 <img src="https://raw.github.com/PhilJay/CircleDisplay/master/screenshots/circle_display.png" width="450">
+
 ![alt tag](https://raw.github.com/PhilJay/CircleDisplay/master/screenshots/circledisplay_demo.gif) 
 
 Usage
